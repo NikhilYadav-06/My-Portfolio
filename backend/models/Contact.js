@@ -16,6 +16,24 @@ const contactSchema = new mongoose.Schema({
         required: true
     },
 
+    // Admin reply
+    reply: {
+        type: String,
+        default: ""
+    },
+
+    // Reply status
+    replied: {
+        type: Boolean,
+        default: false
+    },
+
+    // Reply date
+    repliedAt: {
+        type: Date,
+        default: null
+    },
+
     createdAt: {
         type: Date,
         default: Date.now

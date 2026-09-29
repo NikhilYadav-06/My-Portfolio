@@ -5,83 +5,150 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Admin Login</title>
+    <title>Admin Login | Nikhil Portfolio</title>
 
     <link rel="stylesheet" href="style.css">
-
 </head>
 
-<body>
+<body class="admin-page">
 
+    <!-- Header -->
     <header>
-    <!-- same portfolio navbar -->
-</header>
+        <div class="left">
+            Nikhil Portfolio
+        </div>
 
-<main class="login-page">
+        <div class="right">
+            <ul>
+                <li>
+                    <a href="index.html">Home</a>
+                </li>
 
-    <div class="login-box">
+                <li>
+                    <a href="About.html">About</a>
+                </li>
 
-        <h1>Admin Login</h1>
+                <li>
+                    <a href="Skills.html">Skills</a>
+                </li>
 
-        <input type="text" placeholder="Username">
+                <li>
+                    <a href="project.html">Projects</a>
+                </li>
 
-        <input type="password" placeholder="Password">
+                <li>
+                    <a href="Contact.html">Contact Me</a>
+                </li>
+            </ul>
+        </div>
+    </header>
 
-        <button>Login</button>
 
-    </div>
+    <!-- Admin Login -->
+    <main class="login-page">
 
-</main>
+        <div class="login-box">
 
-<script>
+            <h1>Admin Login</h1>
 
-document.getElementById("loginForm").addEventListener("submit", async function(event) {
+            <form id="loginForm">
 
-    event.preventDefault();
+                <input type="text" id="username" placeholder="Username" required>
 
-    const username = document.getElementById("username").value;
-    const password = document.getElementById("password").value;
-    const message = document.getElementById("message");
+                <input type="password" id="password" placeholder="Password" required>
 
-    try {
+                <button type="submit">
+                    Login
+                </button>
 
-        const response = await fetch("https://my-portfolio-edwk.onrender.com/api/admin/login", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                username: username,
-                password: password
-            })
+                <p id="message"></p>
+
+            </form>
+
+        </div>
+
+    </main>
+
+
+    <!-- Login JavaScript -->
+    <script>
+
+        document.getElementById("loginForm").addEventListener("submit", async function (event) {
+
+            event.preventDefault();
+
+            const username =
+                document.getElementById("username").value.trim();
+
+            const password =
+                document.getElementById("password").value;
+
+            const message =
+                document.getElementById("message");
+
+            message.innerText = "Logging in...";
+            message.style.color = "#333";
+
+            try {
+
+                const response = await fetch(
+                    "https://my-portfolio-edwk.onrender.com/api/admin/login",
+                    {
+                        method: "POST",
+
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+
+                        body: JSON.stringify({
+                            username: username,
+                            password: password
+                        })
+                    }
+                );
+
+                const data = await response.json();
+
+                console.log("LOGIN RESPONSE:", data);
+
+                if (response.ok && data.success) {
+
+                    localStorage.setItem(
+                        "adminToken",
+                        data.token
+                    );
+
+                    message.innerText = "Login successful!";
+                    message.style.color = "green";
+
+                    setTimeout(function () {
+
+                        window.location.href = "Admin.html";
+
+                    }, 500);
+
+                } else {
+
+                    message.innerText =
+                        data.message || "Invalid username or password";
+
+                    message.style.color = "red";
+                }
+
+            } catch (error) {
+
+                console.error("LOGIN ERROR:", error);
+
+                message.innerText =
+                    "Server connection error. Please try again.";
+
+                message.style.color = "red";
+            }
+
         });
 
-        const data = await response.json();
+    </script>
 
-        console.log("LOGIN:", data);
-
-        if (data.success) {
-
-            localStorage.setItem("adminToken", data.token);
-
-            window.location.href = "./Admin.html";
-
-        } else {
-
-            message.innerText = data.message;
-
-        }
-
-    } catch (error) {
-
-        console.error(error);
-        message.innerText = "Server connection error ";
-
-    }
-
-});
-
-</script>
 </body>
 
 </html>
