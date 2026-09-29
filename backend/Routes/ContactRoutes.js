@@ -103,42 +103,47 @@ router.post("/reply", authMiddleware, async (req, res) => {
         // Create email transporter
         const transporter = nodemailer.createTransport({
             service: "gmail",
+
             auth: {
                 user: process.env.EMAIL_USER,
                 pass: process.env.EMAIL_PASS
-            }
+            },
+
+            connectionTimeout: 10000,
+            greetingTimeout: 10000,
+            socketTimeout: 10000
         });
+    
+// Send reply email
+await transporter.sendMail({
+    from: `"Nikhil Portfolio" <${process.env.EMAIL_USER}>`,
+    to: contact.email,
+    subject: `Re: Message from Nikhil Portfolio`,
+    text: reply.trim()
+});
 
-        // Send reply email
-        await transporter.sendMail({
-            from: `"Nikhil Portfolio" <${process.env.EMAIL_USER}>`,
-            to: contact.email,
-            subject: `Re: Message from Nikhil Portfolio`,
-            text: reply.trim()
-        });
+// Save reply in MongoDB
+contact.reply = reply.trim();
+contact.replied = true;
+contact.repliedAt = new Date();
 
-        // Save reply in MongoDB
-        contact.reply = reply.trim();
-        contact.replied = true;
-        contact.repliedAt = new Date();
+await contact.save();
 
-        await contact.save();
-
-        res.json({
-            success: true,
-            message: "Reply sent successfully"
-        });
+res.json({
+    success: true,
+    message: "Reply sent successfully"
+});
 
     } catch (error) {
 
-        console.log("REPLY ERROR:", error);
+    console.log("REPLY ERROR:", error);
 
-        res.status(500).json({
-            success: false,
-            message: "Failed to send reply"
-        });
+    res.status(500).json({
+        success: false,
+        message: "Failed to send reply"
+    });
 
-    }
+}
 
 });
 
